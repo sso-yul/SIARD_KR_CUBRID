@@ -112,16 +112,16 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer
 
   
   // (2024.09.10) 데이터베이스가 CUBRID인지 아닌지 확인하는 로직
-  private boolean isCUBRID(Connection conn) throws SQLException {
-  	DatabaseMetaData metaData = (DatabaseMetaData) conn.getMetaData();
+  private boolean isCUBRID() throws SQLException {
+  	DatabaseMetaData metaData = (DatabaseMetaData) _conn.getMetaData();
   	String dbProductName = metaData.getDatabaseProductName();
   	return dbProductName.equalsIgnoreCase("CUBRID");
   }
   
   // (2024.09.10) DatabaseMetaData에서 스키마 목록을 조회해 특정 스키마가 존재하는지 확인함
-  private boolean schemaExists(Connection conn, String schemaName) throws SQLException {
+  private boolean schemaExists(String schemaName) throws SQLException {
   	boolean exists = false;
-  	DatabaseMetaData metaData = (DatabaseMetaData) conn.getMetaData();
+  	DatabaseMetaData metaData = (DatabaseMetaData) _conn.getMetaData();
   	
   	try (ResultSet rs = metaData.getSchemas()) {
   		while (rs.next()) {
@@ -454,7 +454,7 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer
    */
 	private void getTable(Table table)
 	    throws IOException, SQLException
-	  {
+	  {		
 	    _il.enter(table.getMetaTable().getName());
 	    _swGetCell = StopWatch.getInstance();
 	    _swGetValue = StopWatch.getInstance();
@@ -600,7 +600,20 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer
   {
   	String schema_name = schema.getMetaSchema().getName();
     _il.enter(schema_name);
+    
 
+    // (2024.09.10) 큐브리드 데이터베이스인지 확인하기
+    boolean isCUBRID = isCUBRID();
+    
+    if (isCUBRID) {
+    	boolean schemaExists = schemaExists(schema_name);
+    	if (!schemaExists) {
+    		// (2024.09.10) TODO: 스키마가 존재하지 않을 때 어떻게 처리할 것인지 로직 짜기
+    		return;
+    	}
+    }
+    
+    
 		List<String>	list = _archive.getTableCheckedList();
 		List<String> schemaSelList = new ArrayList<>(); //특정 스키마 전체 테이블 다운로드 할 스키마 List
 		boolean is_table_select	= false;
