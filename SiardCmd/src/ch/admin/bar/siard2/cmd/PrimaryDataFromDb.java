@@ -38,6 +38,8 @@ import java.util.StringTokenizer;
 
 import javax.xml.datatype.Duration;
 
+import com.ibm.db2.jcc.am.DatabaseMetaData;
+
 import ch.admin.bar.siard2.api.Archive;
 import ch.admin.bar.siard2.api.Cell;
 import ch.admin.bar.siard2.api.MetaColumn;
@@ -108,6 +110,32 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer
     return bCancelRequested;
   } /* cancelRequested */
 
+  
+  // (2024.09.10) 데이터베이스가 CUBRID인지 아닌지 확인하는 로직
+  private boolean isCUBRID(Connection conn) throws SQLException {
+  	DatabaseMetaData metaData = (DatabaseMetaData) conn.getMetaData();
+  	String dbProductName = metaData.getDatabaseProductName();
+  	return dbProductName.equalsIgnoreCase("CUBRID");
+  }
+  
+  // (2024.09.10) DatabaseMetaData에서 스키마 목록을 조회해 특정 스키마가 존재하는지 확인함
+  private boolean schemaExists(Connection conn, String schemaName) throws SQLException {
+  	boolean exists = false;
+  	DatabaseMetaData metaData = (DatabaseMetaData) conn.getMetaData();
+  	
+  	try (ResultSet rs = metaData.getSchemas()) {
+  		while (rs.next()) {
+  			String dbSchemaName = rs.getString(1);
+  			if (dbSchemaName.equalsIgnoreCase(schemaName)) {
+  				exists = true;
+  				break;
+  			}
+  		}
+  	}
+  	return exists;
+  }
+  
+  
   private void setValue(Value value, Object oValue)
     throws IOException, SQLException
   {
@@ -424,140 +452,141 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer
    * @throws IOException if an I/O error occurred.
    * @throws SQLException if a database error occurred.
    */
-  private void getTable(Table table)
-    throws IOException, SQLException
-  {
-    _il.enter(table.getMetaTable().getName());
-    _swGetCell = StopWatch.getInstance();
-    _swGetValue = StopWatch.getInstance();
-    _swSetValue = StopWatch.getInstance();
-    QualifiedId qiTable = new QualifiedId(null,
-      table.getParentSchema().getMetaSchema().getName(),
-      table.getMetaTable().getName());
-    System.out.println("  Table: "+qiTable.format());
-    long lRecord = 0;
-    RecordRetainer rr = table.createRecords();
-    ResultSet rs = openTable(table, null);
-    Statement stmt = rs.getStatement();
-    StopWatch swCreate = StopWatch.getInstance();
-    StopWatch swGet = StopWatch.getInstance();
-    StopWatch swPut = StopWatch.getInstance();
-    StopWatch sw = StopWatch.getInstance();
-  	sw.start();
-  	long lBytesStart = rr.getByteCount();
-
-  	Map<String, Long> map = new HashMap<String, Long>();
-  	map.put("sourceFileSize", (long) 0);
-		map.put("executeTime", (long) 0);
-		map.put("fileCount", (long) 0);
-
-		try {
-
-			while(rs.next() && (!cancelRequested()))
-	    {
-	    	swCreate.start();
-	      Record record = rr.create();
-	      swCreate.stop();
-	      swGet.start();
-
-	      /***
-	      if (qiTable.getName().equals("Products") && (lRecord >=4) && (lRecord <= 5))
-	      {
-	        Cell cell = record.getCell(0);
-	        MetaColumn mc = cell.getMetaColumn();
-	        System.out.println("start: "+String.valueOf(mc.getMetaFields()));
-	      }
-	      ***/
-	      getRecord(rs,record, map);
-
-
-
-
-	      /***
-	      if (qiTable.getName().equals("Products") && (lRecord >=4) && (lRecord <= 5))
-	      {
-	      	for (int iCell = 0; iCell < record.getCells(); iCell++)
-	      	{
-	      		Cell cell = record.getCell(iCell);
-	      		MetaColumn mc = cell.getMetaColumn();
-	    			Object oCell = cell.getObject();
-	      		if (mc.getCardinality() > 0)
-	      		{
-	      			System.out.println(String.valueOf(iCell)+": "+mc.getName()+" "+String.valueOf(oCell)+": "+((oCell == null)?"null":oCell.getClass().getName())+" "+mc.getCardinality());
-	      			for (int iElement = 0; iElement < cell.getElements(); iElement++)
-	      			{
-	      				Field field = cell.getElement(iElement);
-	      				Object oField = field.getObject();
-	      				System.out.println("  "+String.valueOf(iElement)+" "+String.valueOf(oField));
-	      			}
-	      		}
-	      		else
-	      			System.out.println(String.valueOf(iCell)+": "+mc.getName()+" "+String.valueOf(oCell)+": "+((oCell == null)?"null":oCell.getClass().getName()));
-	      	}
-	    		Cell cell = record.getCell(0);
-	        MetaColumn mc = cell.getMetaColumn();
-	        System.out.println("stop: "+String.valueOf(mc.getMetaFields()));
-	      }
-	      ***/
-	      swGet.stop();
-	      swPut.start();
-	      rr.put(record);
-	      swPut.stop();
-	      lRecord++;
-	      if ((lRecord % _lREPORT_RECORDS) == 0)
-	      {
-	        System.out.println("    Record "+String.valueOf(lRecord)+" ("+sw.formatRate(rr.getByteCount()-lBytesStart,sw.stop())+" kB/s)");
-	      	lBytesStart = rr.getByteCount();
-	      	sw.start();
-	      }
-	      incDownloaded();
-
+	private void getTable(Table table)
+	    throws IOException, SQLException
+	  {
+	    _il.enter(table.getMetaTable().getName());
+	    _swGetCell = StopWatch.getInstance();
+	    _swGetValue = StopWatch.getInstance();
+	    _swSetValue = StopWatch.getInstance();
+	    QualifiedId qiTable = new QualifiedId(null,
+	      table.getParentSchema().getMetaSchema().getName(),
+	      table.getMetaTable().getName());
+	    System.out.println("  Table: "+qiTable.format());
+	    long lRecord = 0;
+	    RecordRetainer rr = table.createRecords();
+	    ResultSet rs = openTable(table, null);
+	    Statement stmt = rs.getStatement();
+	    StopWatch swCreate = StopWatch.getInstance();
+	    StopWatch swGet = StopWatch.getInstance();
+	    StopWatch swPut = StopWatch.getInstance();
+	    StopWatch sw = StopWatch.getInstance();
+	  	sw.start();
+	  	long lBytesStart = rr.getByteCount();
+	
+	  	Map<String, Long> map = new HashMap<String, Long>();
+	  	map.put("sourceFileSize", (long) 0);
+			map.put("executeTime", (long) 0);
+			map.put("fileCount", (long) 0);
+	
+			try {
+	
+				while(rs.next() && (!cancelRequested()))
+		    {
+		    	swCreate.start();
+		      Record record = rr.create();
+		      swCreate.stop();
+		      swGet.start();
+	
+		      /***
+		      if (qiTable.getName().equals("Products") && (lRecord >=4) && (lRecord <= 5))
+		      {
+		        Cell cell = record.getCell(0);
+		        MetaColumn mc = cell.getMetaColumn();
+		        System.out.println("start: "+String.valueOf(mc.getMetaFields()));
+		      }
+		      ***/
+		      getRecord(rs,record, map);
+	
+	
+	
+	
+		      /***
+		      if (qiTable.getName().equals("Products") && (lRecord >=4) && (lRecord <= 5))
+		      {
+		      	for (int iCell = 0; iCell < record.getCells(); iCell++)
+		      	{
+		      		Cell cell = record.getCell(iCell);
+		      		MetaColumn mc = cell.getMetaColumn();
+		    			Object oCell = cell.getObject();
+		      		if (mc.getCardinality() > 0)
+		      		{
+		      			System.out.println(String.valueOf(iCell)+": "+mc.getName()+" "+String.valueOf(oCell)+": "+((oCell == null)?"null":oCell.getClass().getName())+" "+mc.getCardinality());
+		      			for (int iElement = 0; iElement < cell.getElements(); iElement++)
+		      			{
+		      				Field field = cell.getElement(iElement);
+		      				Object oField = field.getObject();
+		      				System.out.println("  "+String.valueOf(iElement)+" "+String.valueOf(oField));
+		      			}
+		      		}
+		      		else
+		      			System.out.println(String.valueOf(iCell)+": "+mc.getName()+" "+String.valueOf(oCell)+": "+((oCell == null)?"null":oCell.getClass().getName()));
+		      	}
+		    		Cell cell = record.getCell(0);
+		        MetaColumn mc = cell.getMetaColumn();
+		        System.out.println("stop: "+String.valueOf(mc.getMetaFields()));
+		      }
+		      ***/
+		      swGet.stop();
+		      swPut.start();
+		      rr.put(record);
+		      swPut.stop();
+		      lRecord++;
+		      if ((lRecord % _lREPORT_RECORDS) == 0)
+		      {
+		        System.out.println("    Record "+String.valueOf(lRecord)+" ("+sw.formatRate(rr.getByteCount()-lBytesStart,sw.stop())+" kB/s)");
+		      	lBytesStart = rr.getByteCount();
+		      	sw.start();
+		      }
+		      incDownloaded();
+	
+		    }
+	
+			}catch(Exception e) {
+	
+			}
+	
+	/*
+			String hms = String.format("%2d:%02d:%02d",
+										downtimesum.toHours(),
+										downtimesum.toMinutes(),
+										(downtimesum.toMillis() / 1000));
+			float downavg = 0.0f;
+			if(this.downcount > 0)
+			{
+				downavg = ((this.downsizesum / 1000) / this.downcount);
+				파일사이즈 / 1000 / 파일갯수
+			}
+	    System.out.println("    다운로드 총 파일 크기 " + (this.downsizesum / 1000) + "kB,  평균 다운로드 속도 (" +  downavg + " kB/s), 다운로드 시간 " + hms);
+	*/
+	    /**
+	     * 다운로드 총 파일 크기 (KB/S)
+	     * 평균 다운로드 속도 (KB/s)
+	     * 다운로드 시간
+	     * */
+	    DecimalFormat formatter = new DecimalFormat("###,###");
+	
+	    /* 파일크기, 수행시간, 파일 수 체크 */
+	    if(map.get("sourceFileSize") > 0
+	    		&& map.get("executeTime") > 0
+	    		&& map.get("fileCount") > 0) {
+	    	System.out.println("    다운로드 총 파일 크기 " + formatter.format((map.get("sourceFileSize")/1024)) + "KB,  "
+	    			+ "평균 다운로드 속도 (" + formatter.format(((map.get("sourceFileSize") / map.get("executeTime")) / map.get("fileCount"))) + " KB/s), "
+	    			+ "다운로드 시간 " + formatter.format(map.get("executeTime")/1000) + "s");
 	    }
+	
+	    System.out.println("    Record "+String.valueOf(lRecord)+" ("+sw.formatRate(rr.getByteCount()-lBytesStart,sw.stop())+" kB/s)");
+	    System.out.println("    Total: "+StopWatch.formatLong(lRecord)+" records ("+StopWatch.formatLong(rr.getByteCount())+" bytes in "+sw.formatMs()+" ms)");
+	    // System.out.println("    Create: "+swCreate.formatMs()+" ms, Get: "+swGet.formatMs()+" ms, Put: "+swPut.formatMs()+" ms");
+	    // System.out.println("    Get Cell: "+_swGetCell.formatMs()+" ms, Get Value: "+_swGetValue.formatMs()+" ms, Set Value: "+_swSetValue.formatMs()+" ms");
+	    if (!rs.isClosed())
+	      rs.close();
+	    if (!stmt.isClosed())
+	      stmt.close();
+	    rr.close();
+	    _il.exit();
+	  } /* getTable */
 
-		}catch(Exception e) {
-
-		}
-
-/*
-		String hms = String.format("%2d:%02d:%02d",
-									downtimesum.toHours(),
-									downtimesum.toMinutes(),
-									(downtimesum.toMillis() / 1000));
-		float downavg = 0.0f;
-		if(this.downcount > 0)
-		{
-			downavg = ((this.downsizesum / 1000) / this.downcount);
-			파일사이즈 / 1000 / 파일갯수
-		}
-    System.out.println("    다운로드 총 파일 크기 " + (this.downsizesum / 1000) + "kB,  평균 다운로드 속도 (" +  downavg + " kB/s), 다운로드 시간 " + hms);
-*/
-    /**
-     * 다운로드 총 파일 크기 (KB/S)
-     * 평균 다운로드 속도 (KB/s)
-     * 다운로드 시간
-     * */
-    DecimalFormat formatter = new DecimalFormat("###,###");
-
-    /* 파일크기, 수행시간, 파일 수 체크 */
-    if(map.get("sourceFileSize") > 0
-    		&& map.get("executeTime") > 0
-    		&& map.get("fileCount") > 0) {
-    	System.out.println("    다운로드 총 파일 크기 " + formatter.format((map.get("sourceFileSize")/1024)) + "KB,  "
-    			+ "평균 다운로드 속도 (" + formatter.format(((map.get("sourceFileSize") / map.get("executeTime")) / map.get("fileCount"))) + " KB/s), "
-    			+ "다운로드 시간 " + formatter.format(map.get("executeTime")/1000) + "s");
-    }
-
-    System.out.println("    Record "+String.valueOf(lRecord)+" ("+sw.formatRate(rr.getByteCount()-lBytesStart,sw.stop())+" kB/s)");
-    System.out.println("    Total: "+StopWatch.formatLong(lRecord)+" records ("+StopWatch.formatLong(rr.getByteCount())+" bytes in "+sw.formatMs()+" ms)");
-    // System.out.println("    Create: "+swCreate.formatMs()+" ms, Get: "+swGet.formatMs()+" ms, Put: "+swPut.formatMs()+" ms");
-    // System.out.println("    Get Cell: "+_swGetCell.formatMs()+" ms, Get Value: "+_swGetValue.formatMs()+" ms, Set Value: "+_swSetValue.formatMs()+" ms");
-    if (!rs.isClosed())
-      rs.close();
-    if (!stmt.isClosed())
-      stmt.close();
-    rr.close();
-    _il.exit();
-  } /* getTable */
 
   /*------------------------------------------------------------------*/
   /** download primary data of a schema.
