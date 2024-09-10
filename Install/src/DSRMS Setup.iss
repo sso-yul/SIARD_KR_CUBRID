@@ -2,13 +2,13 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SIARD_KR"
-#define MyAppDesktopName "ÇàÁ¤Á¤º¸µ¥ÀÌÅÍ¼¼Æ® ÀÌ°üµµ±¸"
-#define MyApp2Name "ÇàÁ¤Á¤º¸µ¥ÀÌÅÍ¼¼Æ® »èÁ¦Áö¿øµµ±¸"
+#define MyAppDesktopName "í–‰ì •ì •ë³´ë°ì´í„°ì„¸íŠ¸ ì´ê´€ë„êµ¬"
+#define MyApp2Name "í–‰ì •ì •ë³´ë°ì´í„°ì„¸íŠ¸ ì‚­ì œì§€ì›ë„êµ¬"
 #define MyAppVersion "1.1"
-#define MyAppPublisher "±¹°¡±â·Ï¿ø 2020³â ÇàÁ¤Á¤º¸µ¥ÀÌÅÍ¼¼Æ® ±â·Ï°ü¸® Ã¼°è±¸Ãà"
+#define MyAppPublisher "êµ­ê°€ê¸°ë¡ì› 2020ë…„ í–‰ì •ì •ë³´ë°ì´í„°ì„¸íŠ¸ ê¸°ë¡ê´€ë¦¬ ì²´ê³„êµ¬ì¶•"
 #define MyAppURL "http://www.archives.go.kr/"
-#define MyAppExeName "ÇàÁ¤Á¤º¸µ¥ÀÌÅÍ¼¼Æ® ÀÌ°üµµ±¸.exe"
-#define MyApp2ExeName "ÇàÁ¤Á¤º¸µ¥ÀÌÅÍ¼¼Æ® »èÁ¦Áö¿øµµ±¸.exe"
+#define MyAppExeName "í–‰ì •ì •ë³´ë°ì´í„°ì„¸íŠ¸ ì´ê´€ë„êµ¬.exe"
+#define MyApp2ExeName "í–‰ì •ì •ë³´ë°ì´í„°ì„¸íŠ¸ ì‚­ì œì§€ì›ë„êµ¬.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -27,7 +27,7 @@ AllowNoIcons=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 ;PrivilegesRequiredOverridesAllowed=commandline dialog 
-OutputDir=C:\Users\DATASET2\Desktop
+OutputDir=D:\Siard_Jsmooth
 OutputBaseFilename=SIARD_KR v1.1 Setup
 Compression=lzma
 SolidCompression=yes
@@ -39,26 +39,26 @@ Name: "korean"; MessagesFile: "compiler:Languages\Korean.isl"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}";
 
-;etc Æú´õ´Â »ç¿ëÀÚ appdata/local/etc °æ·Î(localappdata)¿¡ ¼³Ä¡ÇÏµµ·Ï Ãß°¡ 
-;´Ü, logging.properties´Â ÇÁ·Î±×·¥ °æ·Î¿¡ ¼³Ä¡.
+;etc í´ë”ëŠ” ì‚¬ìš©ì appdata/local/etc ê²½ë¡œ(localappdata)ì— ì„¤ì¹˜í•˜ë„ë¡ ì¶”ê°€ 
+;ë‹¨, logging.propertiesëŠ” í”„ë¡œê·¸ë¨ ê²½ë¡œì— ì„¤ì¹˜.
 [Files]
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\README.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\RELEASE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\log4j.properties"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\ÇàÁ¤Á¤º¸µ¥ÀÌÅÍ¼¼Æ® ÀÌ°üµµ±¸.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\ÇàÁ¤Á¤º¸µ¥ÀÌÅÍ¼¼Æ® ÀÌ°üµµ±¸_debug.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\eraser_gui\apps\*"; DestDir: "{app}\eraser_gui\apps"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\eraser_gui\ÇàÁ¤Á¤º¸µ¥ÀÌÅÍ¼¼Æ® »èÁ¦Áö¿øµµ±¸.exe"; DestDir: "{app}\eraser_gui"; Flags: ignoreversion
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\eraser_gui\ÇàÁ¤Á¤º¸µ¥ÀÌÅÍ¼¼Æ® »èÁ¦Áö¿øµµ±¸_debug.exe"; DestDir: "{app}\eraser_gui"; Flags: ignoreversion
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\etc\*"; DestDir: "{app}\etc"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\etc\logging.properties"; DestDir: "{app}\etc"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\bin\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\doc\*"; DestDir: "{app}\doc"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\hxd\*"; DestDir: "{app}\hxd"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\testfiles\*"; DestDir: "{app}\testfiles"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\java\*"; DestDir: "{app}\java"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\README.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\RELEASE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\log4j.properties"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\í–‰ì •ì •ë³´ë°ì´í„°ì„¸íŠ¸ ì´ê´€ë„êµ¬.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\í–‰ì •ì •ë³´ë°ì´í„°ì„¸íŠ¸ ì´ê´€ë„êµ¬_debug.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\eraser_gui\apps\*"; DestDir: "{app}\eraser_gui\apps"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\eraser_gui\í–‰ì •ì •ë³´ë°ì´í„°ì„¸íŠ¸ ì‚­ì œì§€ì›ë„êµ¬.exe"; DestDir: "{app}\eraser_gui"; Flags: ignoreversion
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\eraser_gui\í–‰ì •ì •ë³´ë°ì´í„°ì„¸íŠ¸ ì‚­ì œì§€ì›ë„êµ¬_debug.exe"; DestDir: "{app}\eraser_gui"; Flags: ignoreversion
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\etc\*"; DestDir: "{app}\etc"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\etc\logging.properties"; DestDir: "{app}\etc"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\bin\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\doc\*"; DestDir: "{app}\doc"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\hxd\*"; DestDir: "{app}\hxd"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\testfiles\*"; DestDir: "{app}\testfiles"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\lenovo\Desktop\SIARD_KR_git\SIARD_KR\Install\src\java\*"; DestDir: "{app}\java"; Flags: ignoreversion recursesubdirs createallsubdirs
 ;Source: "D:\Developments-202006-v3.9\Workspaces_svn\Install\src\log\*"; DestDir: "{app}\log"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
@@ -69,19 +69,19 @@ Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{userdesktop}\{#MyAppDesktopName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 Name: "{userdesktop}\{#MyApp2Name}"; Filename: "{app}\eraser_gui\{#MyApp2ExeName}"; Tasks: desktopicon
 
-;°ü¸®ÀÚ±ÇÇÑ ½ÇÇà Á¦°Å  Flags : runascurrentuser Ãß°¡
+;ê´€ë¦¬ìê¶Œí•œ ì‹¤í–‰ ì œê±°  Flags : runascurrentuser ì¶”ê°€
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
 
-;»èÁ¦½Ã ¸ŞÀÎ Æú´õ °æ·Î ÀüÃ¼ »èÁ¦.
+;ì‚­ì œì‹œ ë©”ì¸ í´ë” ê²½ë¡œ ì „ì²´ ì‚­ì œ.
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
 
-;µğ·ºÅä¸® ±ÇÇÑ ¼³Á¤(everyone)
+;ë””ë ‰í† ë¦¬ ê¶Œí•œ ì„¤ì •(everyone)
 [dirs] 
 Name: "{app}"; Permissions: everyone-full;
 
-;»èÁ¦½Ã ±âÁ¸ ÇÁ·Î±×·¥ ¼³Ä¡ À¯¹« Ã¼Å©.
+;ì‚­ì œì‹œ ê¸°ì¡´ í”„ë¡œê·¸ë¨ ì„¤ì¹˜ ìœ ë¬´ ì²´í¬.
 [Code]
 function InitializeSetup(): Boolean;
 var
@@ -99,8 +99,8 @@ begin
      if RegKeyExists(HKEY_LOCAL_MACHINE,
        'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + vCurID + '_is1') then
      begin
-       //°³Çà¹®ÀÚ : #13#10
-       if MsgBox(vCurAppName + ' ÇÁ·Î±×·¥Àº ÀÌ¹Ì ¼³Ä¡µÇ¾îÀÖ½À´Ï´Ù. ±âÁ¸ ÇÁ·Î±×·¥À» »èÁ¦ÇÏ°í Àç¼³Ä¡ ÇÏ½Ã°Ú½À´Ï±î?'+#13#10#13#10+'´Ü, »èÁ¦ ½Ã ±âÁ¸ ¼³Á¤°ª ¹× »ç¿ëÀÌ·ÂÀÌ ÀüºÎ »èÁ¦µË´Ï´Ù.(ÇÊ¿ä ½Ã ¸ÕÀú ¹é¾÷ ÇØÁÖ¼¼¿ä)',
+       //ê°œí–‰ë¬¸ì : #13#10
+       if MsgBox(vCurAppName + ' í”„ë¡œê·¸ë¨ì€ ì´ë¯¸ ì„¤ì¹˜ë˜ì–´ìˆìŠµë‹ˆë‹¤. ê¸°ì¡´ í”„ë¡œê·¸ë¨ì„ ì‚­ì œí•˜ê³  ì¬ì„¤ì¹˜ í•˜ì‹œê² ìŠµë‹ˆê¹Œ?'+#13#10#13#10+'ë‹¨, ì‚­ì œ ì‹œ ê¸°ì¡´ ì„¤ì •ê°’ ë° ì‚¬ìš©ì´ë ¥ì´ ì „ë¶€ ì‚­ì œë©ë‹ˆë‹¤.(í•„ìš” ì‹œ ë¨¼ì € ë°±ì—… í•´ì£¼ì„¸ìš”)',
            mbConfirmation, MB_YESNO) = IDYES then
          begin
              RegQueryStringValue(HKEY_LOCAL_MACHINE,
