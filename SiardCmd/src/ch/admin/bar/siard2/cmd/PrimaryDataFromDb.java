@@ -608,8 +608,16 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer
     if (isCUBRID) {
     	boolean schemaExists = schemaExists(schema_name);
     	if (!schemaExists) {
-    		// (2024.09.10) TODO: 스키마가 존재하지 않을 때 어떻게 처리할 것인지 로직 짜기
-    		return;
+    		// (2024.09.10) TODO:: 스키마가 존재하지 않을 때 어떻게 처리할 것인지 로직 짜기
+    		// (2024.09.11) 그냥 무시하고 받아오기?
+    		/* 
+    		 * 스키마가 존재하지 않을 때는 스키마의 존재를 무시한 채로 데이터 받아오려 했으나 
+    		 * 테이블의 이름이 같고 스키마가 다른 경우에는 어떡하지... 
+    		 * 우선 되나 안 되나 테스트 해보기
+    		 *
+    		 **/
+    		System.out.println("스키마가 존재하지 않음. 무시하고 데이터를 받아옵니다.");
+    		_il.warning("스키마가 존재하지 않음. 무시하고 데이터를 받아옵니다.");
     	}
     }
     
