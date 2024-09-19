@@ -109,31 +109,6 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer
       bCancelRequested = _progress.cancelRequested();
     return bCancelRequested;
   } /* cancelRequested */
-
-  
-  // (2024.09.10) 데이터베이스가 CUBRID인지 아닌지 확인하는 로직
-  private boolean isCUBRID() throws SQLException {
-  	_dbms = _conn.getMetaData().getDatabaseProductName();
-  	return _dbms.equalsIgnoreCase("CUBRID");
-  }
-  
-  // (2024.09.10) DatabaseMetaData에서 스키마 목록을 조회해 특정 스키마가 존재하는지 확인함
-  private boolean schemaExists(String schemaName) throws SQLException {
-  	boolean exists = false;
-  	DatabaseMetaData metaData = (DatabaseMetaData) _conn.getMetaData();
-  	
-  	try (ResultSet rs = metaData.getSchemas()) {
-  		while (rs.next()) {
-  			String dbSchemaName = rs.getString(1);
-  			if (dbSchemaName.equalsIgnoreCase(schemaName)) {
-  				exists = true;
-  				break;
-  			}
-  		}
-  	}
-  	return exists;
-  }
-  
   
   private void setValue(Value value, Object oValue)
     throws IOException, SQLException
@@ -599,38 +574,6 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer
   {
   	String schema_name = schema.getMetaSchema().getName();
     _il.enter(schema_name);
-    
-
-
-		// (2024.09.11) 실행해보았으나 안 됨... 큐브리드 뿐만 아니라 다른 DB도 영향을 받음(왜?) -> 이 부분 해결
-    // (2024.09.10) 큐브리드 데이터베이스인지 확인하기 -> 확인 완료
-    System.out.println("=============20240911============");
-    boolean isCUBRID = isCUBRID();
-    System.out.println("=============20240911_2============");
-    if (isCUBRID) {
-    	System.out.println("==================isCubrid");
-    	boolean schemaExists = schemaExists(schema_name);
-    	if (!schemaExists) {
-    		// (2024.09.10) TODO:: 스키마가 존재하지 않을 때 어떻게 처리할 것인지 로직 짜기
-    		// (2024.09.11) 그냥 무시하고 받아오기?
-    		  
-//    		 스키마가 존재하지 않을 때는 스키마의 존재를 무시한 채로 데이터 받아오려 했으나 
-//    		 테이블의 이름이 같고 스키마가 다른 경우에는 어떡하지... 
-//    		 우선 되나 안 되나 테스트 해보기
-//    		 -> 해보았으나 다른 DB마저 전부 ..... 스키마 무시되어서 실행됨 완전 실패
-//    		 (2024.09.11_2)
-//    		 isCUBRID 클래스 변경 후 다른 DB는 isCUBRID 메서드를 타지 않음. 
-//    		 그러나 잘 실행되던 큐브리드의 db_serial 마저 잘못된 동작을 함... schemaExists 클래스 수정해야할 듯
-//    		 (2024.09.11_3)
-//    		 isCUBRID 메서드 잘 탐 이제 schemaExists 클래스 수정할 차례임
-    		 
-    		System.out.println("스키마가 존재하지 않음. 무시하고 데이터를 받아옵니다.");
-    		_il.warning("스키마가 존재하지 않음. 무시하고 데이터를 받아옵니다.");
-    	}
-    }
-
-
-    
     
 		List<String>	list = _archive.getTableCheckedList();
 		List<String> schemaSelList = new ArrayList<>(); //특정 스키마 전체 테이블 다운로드 할 스키마 List
