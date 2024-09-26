@@ -112,16 +112,16 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer
 
   
   // (2024.09.10) 데이터베이스가 CUBRID인지 아닌지 확인하는 로직
-  private boolean isCUBRID(Connection conn) throws SQLException {
-  	DatabaseMetaData metaData = (DatabaseMetaData) conn.getMetaData();
+  private boolean isCUBRID() throws SQLException {
+  	DatabaseMetaData metaData = (DatabaseMetaData) _conn.getMetaData();
   	String dbProductName = metaData.getDatabaseProductName();
   	return dbProductName.equalsIgnoreCase("CUBRID");
   }
   
   // (2024.09.10) DatabaseMetaData에서 스키마 목록을 조회해 특정 스키마가 존재하는지 확인함
-  private boolean schemaExists(Connection conn, String schemaName) throws SQLException {
+  private boolean schemaExists(String schemaName) throws SQLException {
   	boolean exists = false;
-  	DatabaseMetaData metaData = (DatabaseMetaData) conn.getMetaData();
+  	DatabaseMetaData metaData = (DatabaseMetaData) _conn.getMetaData();
   	
   	try (ResultSet rs = metaData.getSchemas()) {
   		while (rs.next()) {
@@ -600,7 +600,27 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer
   {
   	String schema_name = schema.getMetaSchema().getName();
     _il.enter(schema_name);
+    
+    
+//    // (2024.09.10) 큐브리드 데이터베이스인지 확인하기
+//    boolean isCUBRID = isCUBRID();
+//    
+//    if (isCUBRID) {
+//    	boolean schemaExists = schemaExists(schema_name);
+//    	if (!schemaExists) {
+//    		// (2024.09.10) TODO:: 스키마가 존재하지 않을 때 어떻게 처리할 것인지 로직 짜기
+//    		// (2024.09.11) 그냥 무시하고 받아오기?
+//    		/* 
+//    		 * 스키마가 존재하지 않을 때는 스키마의 존재를 무시한 채로 데이터 받아오려 했으나 
+//    		 * 테이블의 이름이 같고 스키마가 다른 경우에는 어떡하지... 
+//    		 *
+//    		 **/
+//    		System.out.println("스키마가 존재하지 않음. 무시하고 데이터를 받아옴.");
+//    		_il.warning("스키마가 존재하지 않음. 무시하고 데이터를 받아옴.");
+//    	}
+//    }
 
+    
 		List<String>	list = _archive.getTableCheckedList();
 		List<String> schemaSelList = new ArrayList<>(); //특정 스키마 전체 테이블 다운로드 할 스키마 List
 		boolean is_table_select	= false;
